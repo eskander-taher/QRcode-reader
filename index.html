@@ -38,16 +38,13 @@
             fps: 20, // Frames per second to attempt a scan
         })
 
-        scanner.render(success, error);
+        scanner.render(success)
 
-        function success(result) {
-            console.log(result)
+        function success(result){
+            document.getElementById('result').innerHTML = result
             scanner.clear()
         }
-
-        function error(err) {
-            console.error(err)
-        }
+        
     </script>
 </body>
 </html>
