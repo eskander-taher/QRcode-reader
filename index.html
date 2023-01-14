@@ -44,9 +44,11 @@
 
         function success(result) {
             if(result){
-                window.location.href = './index2.html'
+                // window.location.href = result
+                console.log(result)
             }
         }
+        document.querySelectorAll("input")
 
         function error(err) {
             console.error(err);
