@@ -1,19 +1,47 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QR Code Reader</title>
     <script src="https://cdn.jsdelivr.net/npm/qrcode-reader@1.0.0/dist/qrcode-reader.min.js"></script>
-    <script src="script.js"></script>
+    <script>
+        function readQRCode() {
+            const video = document.createElement('video');
+            const canvasElement = document.getElementById('canvas');
+            const canvas = canvasElement.getContext('2d');
+            const qrCodeData = document.createElement('h1');
+            qrCodeData.id = "qrCodeData";
+            document.body.appendChild(video);
+            document.body.appendChild(qrCodeData);
+            // Use facingMode: environment to attemt to get the front camera on phones
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }).then(function(stream) {
+                video.srcObject = stream;
+                video.setAttribute("playsinline", true); // required to tell iOS safari we don't want fullscreen
+                video.play();
+                requestAnimationFrame(tick);
+            });
+
+            function tick() {
+                canvasElement.height = video.videoHeight;
+                canvasElement.width = video.videoWidth;
+                canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+                var imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
+                var code = qrcode.decode(imageData.data, imageData.width, imageData.height);
+                if (code) {
+                    document.getElementById("qrCodeData").innerText = code.data;
+                    // Stop the video when QR code is decoded
+                    video.srcObject.getTracks().forEach(function(track) {
+                        track.stop();
+                    });
+                }else{
+                    requestAnimationFrame(tick);
+                }
+            }
+        }
+    </script>
 </head>
+
 <body onload="readQRCode()">
-    <div id="loadingMessage">⌛ Loading video...</div>
     <canvas id="canvas" hidden></canvas>
-    <div id="output" hidden>
-        <div id="outputMessage">QR Code data:</div>
-        <div id="outputData"></div>
-    </div>
 </body>
 </html>
