@@ -20,6 +20,7 @@
         #result {
             text-align: center;
             font-size: 1.5rem;
+            width: 300px;
         }
     </style>
 
@@ -41,6 +42,7 @@
         scanner.render(success)
 
         function success(result){
+            document.getElementById('reader').remove()
             document.getElementById('result').innerHTML = result
             scanner.clear()
         }
