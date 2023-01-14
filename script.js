@@ -43,8 +43,13 @@ function readQRCode() {
                 outputMessage.hidden = false;
                 outputData.parentElement.hidden = false;
                 outputData.innerText = code.data;
+                // Stop the video when QR code is decoded
+                video.srcObject.getTracks().forEach(function(track) {
+                    track.stop();
+                });
+            }else{
+                requestAnimationFrame(tick);
             }
         }
-        requestAnimationFrame(tick);
     }
 }
