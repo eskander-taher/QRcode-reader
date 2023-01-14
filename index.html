@@ -43,6 +43,9 @@
         // Starts scanner
 
         function success(result) {
+            if(result){
+                window.location.href = './index2.html'
+            }
 
             document.getElementById('result').innerHTML = `
             <h2>Success!</h2>
