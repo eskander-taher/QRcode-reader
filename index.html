@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>QR Code Reader</title>
     <script src="https://cdn.jsdelivr.net/npm/qrcode-reader@1.0.0/dist/qrcode-reader.min.js"></script>
@@ -11,36 +10,38 @@
             const canvas = canvasElement.getContext('2d');
             const qrCodeData = document.createElement('h1');
             qrCodeData.id = "qrCodeData";
+            const notFound = document.createElement('p');
+            notFound.id = "notFound";
+            notFound.innerText = "QR code not found";
+            notFound.style.display = "none";
             document.body.appendChild(video);
             document.body.appendChild(qrCodeData);
+            document.body.appendChild(notFound);
             // Use facingMode: environment to attemt to get the front camera on phones
             navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }).then(function(stream) {
                 video.srcObject = stream;
                 video.setAttribute("playsinline", true); // required to tell iOS safari we don't want fullscreen
                 video.play();
-                requestAnimationFrame(tick);
-            });
+                video.onclick = function() {
+                    canvasElement.height = video.videoHeight;
+                    canvasElement.width = video.videoWidth;
+                    canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+                    var imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
+                    var code = qrcode.decode(imageData.data, imageData.width, imageData.height);
+if (code) {
+document.getElementById("qrCodeData").innerText = code.data;
+document.getElementById("qrCodeData").style.display = "block";
+document.getElementById("notFound").style.display = "none";
+} else {
+document.getElementById("qrCodeData").style.display = "none";
+document.getElementById("notFound").style.display = "block";
+}
+}
+});
+}
+</script>
 
-            function tick() {
-                canvasElement.height = video.videoHeight;
-                canvasElement.width = video.videoWidth;
-                canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
-                var imageData = canvas.getImageData(0, 0, canvasElement.width, canvasElement.height);
-                var code = qrcode.decode(imageData.data, imageData.width, imageData.height);
-                if (code) {
-                    document.getElementById("qrCodeData").innerText = code.data;
-                    // Stop the video when QR code is decoded
-                    video.srcObject.getTracks().forEach(function(track) {
-                        track.stop();
-                    });
-                }else{
-                    requestAnimationFrame(tick);
-                }
-            }
-        }
-    </script>
 </head>
-
 <body onload="readQRCode()">
     <canvas id="canvas" hidden></canvas>
 </body>
